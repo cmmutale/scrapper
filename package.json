@@ -1,0 +1,15 @@
+{
+  "name": "scrapper",
+  "version": "1.0.0",
+  "description": "A web scrapper built with node",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "jest"
+  },
+  "author": "cmmutale",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
