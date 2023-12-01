@@ -36,7 +36,23 @@ function normalizeUrl(url) {
     }
 }
 
-async function crawlPage(url) {
+async function crawlPage(baseUrl, url, pages) {
+
+    const baseUrlObj = new URL(baseUrl)
+    const urlObj = new URL(url)
+    // make sure that we are crawling base url subpages
+    if (baseUrlObj.hostname !== urlObj.hostname) {
+        return pages
+    }
+
+    const normalizedCurrentUrl = normalizeUrl(url)
+    if (pages[normalizedCurrentUrl] > 0) {
+        pages[normalizedCurrentUrl]++
+        return pages
+    }
+
+    pages[normalizedCurrentUrl] = 1
+
     console.log(`Crawling: ${url}`)
 
     try {
@@ -44,18 +60,27 @@ async function crawlPage(url) {
 
         if (res.status > 399) {
             console.log(`Error in fetch: status ${res.status} on page: ${url}`)
-            return
+            return pages
         }
         // check for valid html
         const contentType = res.headers.get("content-type")
         if (!contentType.includes("text/html")) {
             console.log(`Non html response content type: ${contentType}`)
-            return
+            return pages
         }
-        console.log(await res.text())
+
+        const htmlBody = await res.text()
+
+        const nextURLs = getUrlFromHTML(htmlBody, baseUrl)
+
+        nextURLs.forEach(async (page) => {
+            pages = await crawlPage(baseUrl, page, pages)
+        })
     } catch (error) {
         console.log(`Error: ${error} | on page ${url}`)
     }
+
+    return pages
 }
 
 module.exports = {
