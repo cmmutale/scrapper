@@ -19,7 +19,7 @@ function getUrlFromHTML(htmlBody, baseUrl) {
                 const urlObj = new URL(item.href)
                 urls.push(urlObj.href)
             } catch (error) {
-                console.log(`Error: ${error}`)
+                console.log(`Error: ${error} for URL: "${item.href}"`)
             }
         }
     })
